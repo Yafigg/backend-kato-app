@@ -34,8 +34,8 @@ RUN composer install --no-dev --optimize-autoloader
 # Change current user to www
 USER www-data
 
-# Expose port 8000
-EXPOSE 8000
+# Expose port from environment variable
+EXPOSE $PORT
 
 # Start PHP built-in server
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+CMD ["php", "-S", "0.0.0.0:$PORT", "-t", "public"]
