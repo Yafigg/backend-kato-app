@@ -2,7 +2,7 @@
 nixPkgs = ["php82", "php82Packages.composer"]
 
 [phases.install]
-cmds = ["composer install --no-dev --optimize-autoloader"]
+cmds = ["composer install --optimize-autoloader"]
 
 [phases.build]
 cmds = ["php artisan migrate --force", "php artisan db:seed --force"]
