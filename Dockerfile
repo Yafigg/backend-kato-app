@@ -8,7 +8,9 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    libpq-dev \
+    postgresql-client
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -20,10 +22,10 @@ RUN docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Copy existing application directory contents
-COPY . /var/www
+# Copy application code
+COPY . /var/www/html
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
@@ -31,11 +33,16 @@ RUN composer install --no-dev --optimize-autoloader
 # Configure Apache
 RUN a2enmod rewrite
 
-# Copy public files to Apache document root
-COPY public/ /var/www/html/
-
-# Create simple health check file
-RUN echo '<?php echo json_encode(["status" => "ok", "timestamp" => date("c")]); ?>' > /var/www/html/health.php
+# Create Apache virtual host configuration
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 # Expose port 80
 EXPOSE 80
