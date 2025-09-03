@@ -29,22 +29,25 @@ LOG_LEVEL=error
 ## **Setup Instructions**
 
 1. **Add MySQL Database di Railway:**
-   - Go to Railway dashboard
-   - Click "New" → "Database" → "MySQL"
-   - Copy connection details
+
+    - Go to Railway dashboard
+    - Click "New" → "Database" → "MySQL"
+    - Copy connection details
 
 2. **Set Environment Variables:**
-   - Go to your service
-   - Go to "Variables" tab
-   - Add each environment variable above
+
+    - Go to your service
+    - Go to "Variables" tab
+    - Add each environment variable above
 
 3. **Deploy:**
-   - Railway akan otomatis deploy dari GitHub
-   - Custom domain: `backend-kato.throoner.my.id`
+    - Railway akan otomatis deploy dari GitHub
+    - Custom domain: `backend-kato.throoner.my.id`
 
 ## **Post-Deployment**
 
 Setelah deploy, jalankan:
+
 ```bash
 php artisan migrate --force
 php artisan db:seed --force

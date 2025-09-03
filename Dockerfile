@@ -1,4 +1,4 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -33,11 +33,12 @@ COPY --chown=www-data:www-data . /var/www
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Change current user to www
-USER www-data
+# Configure Apache
+RUN a2enmod rewrite
+COPY public/ /var/www/html/
 
-# Expose port from environment variable
-EXPOSE $PORT
+# Expose port 80
+EXPOSE 80
 
-# Start PHP built-in server
-CMD ["php", "-S", "0.0.0.0:$PORT", "-t", "public"]
+# Start Apache
+CMD ["apache2-foreground"]
