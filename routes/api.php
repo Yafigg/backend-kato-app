@@ -117,3 +117,12 @@ Route::get('test', function () {
         'version' => '1.0.0'
     ]);
 });
+
+// Health check endpoint for Railway
+Route::get('health', function () {
+    return response()->json([
+        'status' => 'healthy',
+        'timestamp' => now(),
+        'version' => '1.0.0'
+    ]);
+});
