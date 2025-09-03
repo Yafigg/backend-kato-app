@@ -33,16 +33,14 @@ RUN composer install --no-dev --optimize-autoloader
 # Configure Apache
 RUN a2enmod rewrite
 
-# Create Apache virtual host configuration
-RUN echo '<VirtualHost *:80>\n\
-    DocumentRoot /var/www/html/public\n\
-    <Directory /var/www/html/public>\n\
-        AllowOverride All\n\
-        Require all granted\n\
-    </Directory>\n\
-    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
-    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+# Copy Laravel public files to Apache document root
+RUN cp -r public/* /var/www/html/
+
+# Create simple health check file in document root
+RUN echo '<?php echo json_encode(["status" => "healthy", "timestamp" => date("c"), "version" => "1.0.0"]); ?>' > /var/www/html/health.php
+
+# Create simple index file
+RUN echo '<?php echo "<h1>Kato App Backend is running!</h1><p>Status: Healthy</p><p>Timestamp: " . date("c") . "</p>"; ?>' > /var/www/html/index.php
 
 # Expose port 80
 EXPOSE 80
