@@ -9,6 +9,7 @@
 **Solutions**:
 
 #### A. Cek DNS Propagation
+
 ```bash
 # Cek DNS record
 nslookup backend-kato.throoner.my.id
@@ -18,12 +19,14 @@ dig backend-kato.throoner.my.id
 ```
 
 #### B. Cek Railway Deployment
+
 1. Go to Railway dashboard
 2. Check if service is running
 3. Check logs for errors
 4. Verify environment variables are set
 
 #### C. Test Railway URL
+
 ```bash
 # Test Railway default URL
 curl https://jhbqbuxr.up.railway.app/health.php
@@ -39,12 +42,15 @@ curl https://jhbqbuxr.up.railway.app/api/test
 **Solutions**:
 
 #### A. Check Build Logs
+
 1. Go to Railway dashboard
 2. Check "Deployments" tab
 3. Look for build errors
 
 #### B. Verify Environment Variables
+
 Pastikan semua environment variables sudah di-set:
+
 ```env
 APP_NAME="Kato App"
 APP_ENV=production
@@ -61,6 +67,7 @@ DB_PASSWORD=Socrates2536@
 ```
 
 #### C. Manual Deploy
+
 1. Go to Railway dashboard
 2. Click "Deploy" button
 3. Wait for deployment to complete
@@ -72,6 +79,7 @@ DB_PASSWORD=Socrates2536@
 **Solutions**:
 
 #### A. Test Database Connection
+
 ```bash
 # Test connection locally
 php -r "
@@ -81,6 +89,7 @@ echo 'Database connection successful!';
 ```
 
 #### B. Check Supabase Status
+
 1. Go to Supabase dashboard
 2. Check if project is active
 3. Verify connection details
@@ -92,6 +101,7 @@ echo 'Database connection successful!';
 **Solutions**:
 
 #### A. Check Routes
+
 ```bash
 # Test basic endpoint
 curl https://jhbqbuxr.up.railway.app/api/test
@@ -101,6 +111,7 @@ curl https://jhbqbuxr.up.railway.app/health.php
 ```
 
 #### B. Check Laravel Logs
+
 1. Go to Railway dashboard
 2. Check "Logs" tab
 3. Look for error messages
@@ -112,33 +123,39 @@ curl https://jhbqbuxr.up.railway.app/health.php
 **Solutions**:
 
 #### A. Check DNS Configuration
+
 1. Go to CloudKilat DNS management
 2. Verify CNAME record:
-   - Hostname: `backend-kato`
-   - Address: `jhbqbuxr.up.railway.app`
-   - TTL: `3600`
+    - Hostname: `backend-kato`
+    - Address: `jhbqbuxr.up.railway.app`
+    - TTL: `3600`
 
 #### B. Check Railway Custom Domain
+
 1. Go to Railway dashboard
 2. Check "Networking" section
 3. Verify custom domain status
 
 #### C. Wait for DNS Propagation
+
 DNS changes can take up to 24 hours to propagate globally.
 
 ## 🚀 Quick Fixes
 
 ### 1. Restart Railway Service
+
 1. Go to Railway dashboard
 2. Click "Restart" button
 3. Wait for service to restart
 
 ### 2. Clear Railway Cache
+
 1. Go to Railway dashboard
 2. Go to "Settings"
 3. Click "Clear Cache"
 
 ### 3. Redeploy Application
+
 1. Go to Railway dashboard
 2. Click "Deploy" button
 3. Wait for deployment to complete
