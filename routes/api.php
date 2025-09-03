@@ -202,3 +202,49 @@ Route::get('debug/db', function () {
         ], 500);
     }
 });
+
+// Debug endpoint for inventory creation
+Route::post('debug/inventory', function (Request $request) {
+    try {
+        // Test data
+        $testData = [
+            'user_id' => 1, // Use first user
+            'product_name' => 'Test Product Debug',
+            'category' => 'Sayuran',
+            'quantity' => 100,
+            'unit' => 'kg',
+            'price_per_unit' => 50000,
+            'harvest_date' => '2025-09-03',
+            'packaging_type' => 'Plastik',
+            'status' => 'available'
+        ];
+        
+        // Test Laravel DB connection
+        $user = \App\Models\User::first();
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No users found in database'
+            ], 500);
+        }
+        
+        $testData['user_id'] = $user->id;
+        
+        // Test inventory creation
+        $inventory = \App\Models\Inventory::create($testData);
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Inventory creation successful',
+            'data' => $inventory
+        ]);
+        
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Inventory creation failed',
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+});
