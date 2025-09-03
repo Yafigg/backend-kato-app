@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -30,13 +30,7 @@ COPY . /var/www/html
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Configure Apache
-RUN a2enmod rewrite
-
-# Copy Laravel public files to Apache document root
-RUN cp -r public/* /var/www/html/
-
-# Create simple health check file in document root
+# Create simple health check file
 RUN echo '<?php echo json_encode(["status" => "healthy", "timestamp" => date("c"), "version" => "1.0.0"]); ?>' > /var/www/html/health.php
 
 # Create simple index file
@@ -45,5 +39,5 @@ RUN echo '<?php echo "<h1>Kato App Backend is running!</h1><p>Status: Healthy</p
 # Expose port 80
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Start PHP built-in server
+CMD ["php", "-S", "0.0.0.0:80", "-t", "/var/www/html"]
