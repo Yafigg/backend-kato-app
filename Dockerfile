@@ -8,9 +8,7 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip \
-    libpq-dev \
-    postgresql-client
+    unzip
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -27,15 +25,17 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
-
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
 # Configure Apache
 RUN a2enmod rewrite
+
+# Copy public files to Apache document root
 COPY public/ /var/www/html/
+
+# Create simple health check file
+RUN echo '<?php echo json_encode(["status" => "ok", "timestamp" => date("c")]); ?>' > /var/www/html/health.php
 
 # Expose port 80
 EXPOSE 80

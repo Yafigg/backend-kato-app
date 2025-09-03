@@ -1,9 +1,9 @@
 <?php
-// Simple health check that always returns 200
+// Simple health check
 http_response_code(200);
 header('Content-Type: application/json');
 echo json_encode([
-    'status' => 'healthy',
+    'status' => 'ok',
     'timestamp' => date('c'),
     'version' => '1.0.0'
 ]);
