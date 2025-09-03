@@ -215,7 +215,10 @@ Route::post('debug/inventory', function (Request $request) {
             'unit' => 'kg',
             'price_per_unit' => 50000,
             'harvest_date' => '2025-09-03',
+            'estimated_ready_date' => '2025-09-05',
             'packaging_type' => 'Plastik',
+            'delivery_method' => 'Pickup',
+            'season' => 'Kemarau',
             'status' => 'available'
         ];
         

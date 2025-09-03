@@ -72,7 +72,10 @@ class InventoryController extends Controller
             'quantity' => 'required|numeric|min:0',
             'price_per_unit' => 'required|numeric|min:0',
             'harvest_date' => 'required|date',
+            'estimated_ready_date' => 'required|date|after_or_equal:harvest_date',
             'packaging_type' => 'required|string|max:100',
+            'delivery_method' => 'required|string|max:100',
+            'season' => 'required|string|max:100',
             'photos' => 'nullable|array',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
