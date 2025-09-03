@@ -126,3 +126,79 @@ Route::get('health', function () {
         'version' => '1.0.0'
     ]);
 });
+
+// Debug endpoint for environment variables
+Route::get('debug/env', function () {
+    $env_vars = [
+        'APP_KEY' => getenv('APP_KEY') ? substr(getenv('APP_KEY'), 0, 8) . '...' : 'NOT SET',
+        'DB_CONNECTION' => getenv('DB_CONNECTION') ?: 'NOT SET',
+        'DB_HOST' => getenv('DB_HOST') ?: 'NOT SET',
+        'DB_PORT' => getenv('DB_PORT') ?: 'NOT SET',
+        'DB_DATABASE' => getenv('DB_DATABASE') ?: 'NOT SET',
+        'DB_USERNAME' => getenv('DB_USERNAME') ?: 'NOT SET',
+        'DB_PASSWORD' => getenv('DB_PASSWORD') ? 'SET' : 'NOT SET',
+        'APP_ENV' => getenv('APP_ENV') ?: 'NOT SET',
+        'APP_DEBUG' => getenv('APP_DEBUG') ?: 'NOT SET',
+        'APP_URL' => getenv('APP_URL') ?: 'NOT SET',
+    ];
+    
+    return response()->json([
+        'status' => 'debug',
+        'environment_variables' => $env_vars,
+        'php_version' => PHP_VERSION,
+        'pdo_available' => extension_loaded('pdo'),
+        'pdo_pgsql_available' => extension_loaded('pdo_pgsql'),
+    ]);
+});
+
+// Debug endpoint for database connection
+Route::get('debug/db', function () {
+    try {
+        $host = getenv('DB_HOST');
+        $port = getenv('DB_PORT');
+        $database = getenv('DB_DATABASE');
+        $username = getenv('DB_USERNAME');
+        $password = getenv('DB_PASSWORD');
+        
+        if (!$host || !$port || !$database || !$username || !$password) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Database connection info incomplete',
+                'missing' => [
+                    'host' => !$host,
+                    'port' => !$port,
+                    'database' => !$database,
+                    'username' => !$username,
+                    'password' => !$password,
+                ]
+            ], 500);
+        }
+        
+        $dsn = "pgsql:host=$host;port=$port;dbname=$database";
+        $pdo = new PDO($dsn, $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Test a simple query
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM users");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Database connection successful',
+            'users_count' => $result['count'],
+            'connection_info' => [
+                'host' => $host,
+                'port' => $port,
+                'database' => $database,
+                'username' => $username,
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Database connection failed',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
