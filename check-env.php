@@ -51,3 +51,4 @@ echo "\n🎯 Laravel App Info:\n";
 echo "APP_ENV: " . (getenv('APP_ENV') ?: 'not set') . "\n";
 echo "APP_DEBUG: " . (getenv('APP_DEBUG') ?: 'not set') . "\n";
 echo "APP_URL: " . (getenv('APP_URL') ?: 'not set') . "\n";
+

@@ -14,3 +14,4 @@ echo "🌱 Running seeders..."
 php artisan db:seed --force
 
 echo "🎉 Database setup completed!"
+

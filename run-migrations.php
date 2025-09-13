@@ -41,3 +41,4 @@ try {
 }
 
 echo "🎉 Database setup completed!\n";
+
