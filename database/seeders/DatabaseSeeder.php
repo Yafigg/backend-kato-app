@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Test User',
                 'password' => bcrypt('password'),
-                'user_type' => 'admin',
+                'user_type' => 'petani',
                 'is_verified' => true,
             ]
         );
