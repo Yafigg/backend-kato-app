@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductionController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\CropController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +68,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // Petani routes
     Route::middleware('role:petani')->prefix('petani')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'petani']);
+    });
+
+    // Crop routes (accessible by petani and management)
+    Route::middleware('role:petani,management')->group(function () {
+        Route::apiResource('crops', CropController::class);
+        Route::get('crops-statistics', [CropController::class, 'statistics']);
     });
 
     // Management routes
