@@ -8,6 +8,9 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductionController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\CropController;
+use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,6 +77,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:petani,management')->group(function () {
         Route::apiResource('crops', CropController::class);
         Route::get('crops-statistics', [CropController::class, 'statistics']);
+    });
+
+    // Transaction routes (accessible by all authenticated users)
+    Route::apiResource('transactions', TransactionController::class);
+    Route::get('transaction-statistics', [TransactionController::class, 'statistics']);
+
+    // Notification routes (accessible by all authenticated users)
+    Route::apiResource('notifications', NotificationController::class);
+    Route::post('notifications/{id}/mark-read', [NotificationController::class, 'markAsRead']);
+    Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+    Route::get('notification-statistics', [NotificationController::class, 'statistics']);
+
+    // Profile routes (accessible by all authenticated users)
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'show']);
+        Route::put('/', [ProfileController::class, 'update']);
+        Route::post('change-password', [ProfileController::class, 'changePassword']);
+        Route::get('statistics', [ProfileController::class, 'statistics']);
     });
 
     // Management routes

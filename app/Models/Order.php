@@ -11,42 +11,40 @@ class Order extends Model
 
     protected $fillable = [
         'order_number',
-        'supplier_id',
-        'customer_id',
+        'buyer_id',
+        'seller_id',
         'inventory_id',
         'quantity',
         'unit_price',
-        'total_price',
+        'total_amount',
         'status',
-        'requested_delivery_date',
+        'delivery_address',
+        'delivery_method',
+        'delivery_date',
         'notes',
-        'rejection_reason',
-        'tracking_number',
-        'approved_at',
-        'delivered_at',
+        'metadata',
     ];
 
     protected function casts(): array
     {
         return [
-            'requested_delivery_date' => 'date',
-            'approved_at' => 'datetime',
-            'delivered_at' => 'datetime',
+            'delivery_date' => 'date',
             'quantity' => 'decimal:2',
             'unit_price' => 'decimal:2',
-            'total_price' => 'decimal:2',
+            'total_amount' => 'decimal:2',
+            'metadata' => 'array',
         ];
     }
 
     // Relationships
-    public function supplier()
+    public function buyer()
     {
-        return $this->belongsTo(User::class, 'supplier_id');
+        return $this->belongsTo(User::class, 'buyer_id');
     }
 
-    public function customer()
+    public function seller()
     {
-        return $this->belongsTo(User::class, 'customer_id');
+        return $this->belongsTo(User::class, 'seller_id');
     }
 
     public function inventory()
@@ -54,9 +52,9 @@ class Order extends Model
         return $this->belongsTo(Inventory::class);
     }
 
-    public function productions()
+    public function transactions()
     {
-        return $this->hasMany(Production::class);
+        return $this->hasMany(Transaction::class);
     }
 
     // Scopes
@@ -65,14 +63,14 @@ class Order extends Model
         return $query->where('status', $status);
     }
 
-    public function scopeBySupplier($query, $supplierId)
+    public function scopeByBuyer($query, $buyerId)
     {
-        return $query->where('supplier_id', $supplierId);
+        return $query->where('buyer_id', $buyerId);
     }
 
-    public function scopeByCustomer($query, $customerId)
+    public function scopeBySeller($query, $sellerId)
     {
-        return $query->where('customer_id', $customerId);
+        return $query->where('seller_id', $sellerId);
     }
 
     // Helper methods
@@ -81,24 +79,19 @@ class Order extends Model
         return $this->status === 'pending';
     }
 
-    public function isApproved()
+    public function isConfirmed()
     {
-        return $this->status === 'approved';
+        return $this->status === 'confirmed';
     }
 
-    public function isRejected()
+    public function isProcessing()
     {
-        return $this->status === 'rejected';
+        return $this->status === 'processing';
     }
 
-    public function isInProduction()
+    public function isShipped()
     {
-        return $this->status === 'in_production';
-    }
-
-    public function isReadyForDelivery()
-    {
-        return $this->status === 'ready_for_delivery';
+        return $this->status === 'shipped';
     }
 
     public function isDelivered()
@@ -106,13 +99,26 @@ class Order extends Model
         return $this->status === 'delivered';
     }
 
-    public function isCompleted()
-    {
-        return $this->status === 'completed';
-    }
-
     public function isCancelled()
     {
         return $this->status === 'cancelled';
+    }
+
+    public function isRefunded()
+    {
+        return $this->status === 'refunded';
+    }
+
+    // Generate order number
+    public static function generateOrderNumber()
+    {
+        $date = now()->format('Ymd');
+        $lastOrder = self::whereDate('created_at', now()->toDateString())
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        $sequence = $lastOrder ? (intval(substr($lastOrder->order_number, -3)) + 1) : 1;
+        
+        return 'ORD-' . $date . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
     }
 }

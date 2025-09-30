@@ -13,6 +13,7 @@ class Inventory extends Model
 
     protected $fillable = [
         'user_id',
+        'crop_id',
         'product_name',
         'category',
         'subcategory',
@@ -27,6 +28,7 @@ class Inventory extends Model
         'photos',
         'status',
         'notes',
+        'metadata',
     ];
 
     protected function casts(): array
@@ -37,6 +39,7 @@ class Inventory extends Model
             'photos' => 'array',
             'quantity' => 'decimal:2',
             'price_per_unit' => 'decimal:2',
+            'metadata' => 'array',
         ];
     }
 
@@ -44,6 +47,11 @@ class Inventory extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function crop()
+    {
+        return $this->belongsTo(Crop::class);
     }
 
     public function orders()
