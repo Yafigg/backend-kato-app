@@ -18,3 +18,9 @@ yarn-error.log
 *.log
 .DS_Store
 Thumbs.db
+
+# Environment files
+.env
+.env-lokal
+.env-vps
+!.env.example
