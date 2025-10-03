@@ -18,8 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         
         // Configure auth middleware to not redirect for API routes
-        $middleware->redirectGuestsTo(function () {
-            return null; // Don't redirect for API routes
+        $middleware->redirectGuestsTo(function ($request) {
+            if ($request->is('api/*')) {
+                return null; // Don't redirect for API routes
+            }
+            return route('login');
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -140,7 +140,7 @@ class InventoryController extends Controller
             'price_per_unit' => 'sometimes|numeric|min:0',
             'harvest_date' => 'sometimes|date',
             'packaging_type' => 'sometimes|string|max:100',
-            'status' => 'sometimes|in:available,reserved,processing,completed',
+            'status' => 'sometimes|in:available,draft,sold_out,pending,reserved,processing,completed',
             'photos' => 'nullable|array',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);

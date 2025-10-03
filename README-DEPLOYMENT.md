@@ -65,9 +65,10 @@ curl -X POST http://backend-kato.throoner.my.id/api/auth/login \
 ## 💾 Persistent Storage
 
 **IMPORTANT**: Database data is persisted using Docker volumes:
-- `mysql_data` volume stores MySQL data
-- `redis_data` volume stores Redis data
-- Data survives container restarts and updates
+
+-   `mysql_data` volume stores MySQL data
+-   `redis_data` volume stores Redis data
+-   Data survives container restarts and updates
 
 **Never use `migrate:fresh` in production** - it will delete all data!
 

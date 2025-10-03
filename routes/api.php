@@ -52,6 +52,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('orders/{id}/status', [OrderController::class, 'updateStatus']);
     Route::get('order-statistics', [OrderController::class, 'statistics']);
     
+    // Outbound routes (accessible by management only)
+    Route::middleware('role:management')->group(function () {
+        Route::get('outbound-statistics', [App\Http\Controllers\Api\OutboundController::class, 'statistics']);
+        Route::get('outbound-items', [App\Http\Controllers\Api\OutboundController::class, 'outboundItems']);
+        Route::get('shipment-history', [App\Http\Controllers\Api\OutboundController::class, 'shipmentHistory']);
+        Route::post('outbound-shipments', [App\Http\Controllers\Api\OutboundController::class, 'createShipment']);
+        Route::put('inventory/{id}/mark-shipped', [App\Http\Controllers\Api\OutboundController::class, 'markAsShipped']);
+        Route::put('outbound-shipments/{id}/status', [App\Http\Controllers\Api\OutboundController::class, 'updateShipmentStatus']);
+    });
+    
     // Production routes (accessible by management only)
     Route::middleware('role:management')->group(function () {
         Route::apiResource('productions', ProductionController::class);
