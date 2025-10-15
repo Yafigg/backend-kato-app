@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\CropController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\PemasaranController;
 
 /*
 |--------------------------------------------------------------------------
@@ -113,36 +115,47 @@ Route::middleware('auth:sanctum')->group(function () {
         
         // Gudang In routes
         Route::middleware('management.subrole:gudang_in')->prefix('gudang-in')->group(function () {
-            Route::get('dashboard', function () {
-                return response()->json(['message' => 'Gudang In dashboard']);
-            });
+            Route::get('dashboard', [DashboardController::class, 'gudangIn']);
+            Route::get('inventory', [InventoryController::class, 'index']);
+            Route::get('inventory-statistics', [InventoryController::class, 'statistics']);
         });
 
         // Gudang Out routes
         Route::middleware('management.subrole:gudang_out')->prefix('gudang-out')->group(function () {
-            Route::get('dashboard', function () {
-                return response()->json(['message' => 'Gudang Out dashboard']);
-            });
+            Route::get('dashboard', [DashboardController::class, 'gudangOut']);
+            Route::get('statistics', [OutboundController::class, 'statistics']);
+            Route::get('outbound-items', [OutboundController::class, 'outboundItems']);
+            Route::get('shipment-history', [OutboundController::class, 'shipmentHistory']);
+            Route::post('shipments', [OutboundController::class, 'createShipment']);
+            Route::put('inventory/{id}/mark-shipped', [OutboundController::class, 'markAsShipped']);
+            Route::put('shipments/{id}/status', [OutboundController::class, 'updateShipmentStatus']);
         });
 
         // Produksi routes
         Route::middleware('management.subrole:produksi')->prefix('produksi')->group(function () {
-            Route::get('dashboard', function () {
-                return response()->json(['message' => 'Produksi dashboard']);
-            });
+            Route::get('dashboard', [DashboardController::class, 'produksi']);
+            Route::apiResource('productions', ProductionController::class);
+            Route::post('productions/start-stage', [ProductionController::class, 'startStage']);
+            Route::post('productions/{id}/complete-stage', [ProductionController::class, 'completeStage']);
+            Route::get('production-statistics', [ProductionController::class, 'statistics']);
         });
 
         // Pemasaran routes
         Route::middleware('management.subrole:pemasaran')->prefix('pemasaran')->group(function () {
-            Route::get('dashboard', function () {
-                return response()->json(['message' => 'Pemasaran dashboard']);
-            });
+            Route::get('dashboard', [PemasaranController::class, 'dashboard']);
+            Route::get('campaigns', [PemasaranController::class, 'getCampaigns']);
+            Route::get('customer-analytics', [PemasaranController::class, 'getCustomerAnalytics']);
+            Route::get('sales-reports', [PemasaranController::class, 'getSalesReports']);
         });
     });
 
     // Customer routes
     Route::middleware('role:customer')->prefix('customer')->group(function () {
-        Route::get('dashboard', [DashboardController::class, 'customer']);
+        Route::get('dashboard', [CustomerController::class, 'dashboard']);
+        Route::get('products', [CustomerController::class, 'getProducts']);
+        Route::get('categories', [CustomerController::class, 'getCategories']);
+        Route::get('orders', [CustomerController::class, 'getOrders']);
+        Route::post('orders', [CustomerController::class, 'createOrder']);
     });
 });
 

@@ -31,14 +31,47 @@ class AuthController extends Controller
             ], 422);
         }
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid credentials'
-            ], 401);
+        // Check for hardcoded credentials first
+        if ($request->email === 'pemasaran@kato.com' && $request->password === 'password') {
+            // Create or find pemasaran user
+            $user = User::firstOrCreate(
+                ['email' => 'pemasaran@kato.com'],
+                [
+                    'name' => 'Pemasaran Kato',
+                    'password' => Hash::make('password'),
+                    'phone' => '081234567890',
+                    'address' => 'Jakarta, Indonesia',
+                    'user_type' => 'management',
+                    'management_subrole' => 'pemasaran',
+                    'is_verified' => true,
+                    'verified_at' => now(),
+                ]
+            );
+        } elseif ($request->email === 'customer@kato.com' && $request->password === 'password') {
+            // Create or find customer user
+            $user = User::firstOrCreate(
+                ['email' => 'customer@kato.com'],
+                [
+                    'name' => 'Customer Kato',
+                    'password' => Hash::make('password'),
+                    'phone' => '081234567891',
+                    'address' => 'Jakarta, Indonesia',
+                    'user_type' => 'customer',
+                    'is_verified' => true,
+                    'verified_at' => now(),
+                ]
+            );
+        } else {
+            // Regular authentication
+            if (!Auth::attempt($request->only('email', 'password'))) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid credentials'
+                ], 401);
+            }
+            $user = Auth::user();
         }
 
-        $user = Auth::user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

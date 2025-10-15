@@ -221,4 +221,149 @@ class DashboardController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Get gudang in dashboard data
+     */
+    public function gudangIn(Request $request)
+    {
+        $user = $request->user();
+        $subrole = $user->management_subrole;
+
+        $stats = [
+            'inventory' => [
+                'total_items' => Inventory::count(),
+                'available' => Inventory::where('status', 'available')->count(),
+                'reserved' => Inventory::where('status', 'reserved')->count(),
+                'processing' => Inventory::where('status', 'processing')->count(),
+                'ready_for_shipment' => Inventory::where('status', 'ready_for_shipment')->count(),
+            ],
+            'orders' => [
+                'total' => Order::count(),
+                'pending' => Order::where('status', 'pending')->count(),
+                'approved' => Order::where('status', 'approved')->count(),
+                'in_production' => Order::where('status', 'in_production')->count(),
+                'ready_for_delivery' => Order::where('status', 'ready_for_delivery')->count(),
+            ],
+        ];
+
+        // Recent activities
+        $recentOrders = Order::with(['supplier', 'customer', 'inventory'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        $recentInventory = Inventory::with('user')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'statistics' => $stats,
+                'recent_orders' => $recentOrders,
+                'recent_inventory' => $recentInventory,
+                'user_subrole' => $subrole
+            ]
+        ]);
+    }
+
+    /**
+     * Get gudang out dashboard data
+     */
+    public function gudangOut(Request $request)
+    {
+        $user = $request->user();
+        $subrole = $user->management_subrole;
+
+        $stats = [
+            'outbound' => [
+                'total_ready_items' => Inventory::where('status', 'ready_for_shipment')->count(),
+                'total_shipped_today' => \App\Models\OutboundShipment::whereDate('shipped_at', now()->format('Y-m-d'))->count(),
+                'total_shipments_this_month' => \App\Models\OutboundShipment::where('shipped_at', 'like', now()->format('Y-m') . '%')->count(),
+                'total_weight_shipped_today' => \App\Models\OutboundShipment::whereDate('shipped_at', now()->format('Y-m-d'))->sum('total_weight'),
+                'total_weight_shipped_month' => \App\Models\OutboundShipment::where('shipped_at', 'like', now()->format('Y-m') . '%')->sum('total_weight'),
+            ],
+            'orders' => [
+                'total' => Order::count(),
+                'ready_for_delivery' => Order::where('status', 'ready_for_delivery')->count(),
+                'shipped' => Order::where('status', 'shipped')->count(),
+                'delivered' => Order::where('status', 'delivered')->count(),
+            ],
+        ];
+
+        // Recent activities
+        $recentOrders = Order::with(['supplier', 'customer', 'inventory'])
+            ->whereIn('status', ['ready_for_delivery', 'shipped', 'delivered'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        $recentShipments = \App\Models\OutboundShipment::with(['inventoryItems.inventory'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'statistics' => $stats,
+                'recent_orders' => $recentOrders,
+                'recent_shipments' => $recentShipments,
+                'user_subrole' => $subrole
+            ]
+        ]);
+    }
+
+    /**
+     * Get produksi dashboard data
+     */
+    public function produksi(Request $request)
+    {
+        $user = $request->user();
+        $subrole = $user->management_subrole;
+
+        $stats = [
+            'productions' => [
+                'total' => Production::count(),
+                'in_progress' => Production::where('status', 'in_progress')->count(),
+                'completed' => Production::where('status', 'completed')->count(),
+                'gudang_in' => Production::where('stage', 'gudang_in')->count(),
+                'sorting' => Production::where('stage', 'sorting')->count(),
+                'grading' => Production::where('stage', 'grading')->count(),
+                'drying' => Production::where('stage', 'drying')->count(),
+                'packaging' => Production::where('stage', 'packaging')->count(),
+                'gudang_out' => Production::where('stage', 'gudang_out')->count(),
+                'quality_check' => Production::where('stage', 'quality_check')->count(),
+            ],
+            'orders' => [
+                'total' => Order::count(),
+                'in_production' => Order::where('status', 'in_production')->count(),
+                'ready_for_delivery' => Order::where('status', 'ready_for_delivery')->count(),
+            ],
+        ];
+
+        // Recent activities
+        $recentProductions = Production::with(['order.supplier', 'order.customer', 'order.inventory'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        $recentOrders = Order::with(['supplier', 'customer', 'inventory'])
+            ->whereIn('status', ['in_production', 'ready_for_delivery'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'statistics' => $stats,
+                'recent_productions' => $recentProductions,
+                'recent_orders' => $recentOrders,
+                'user_subrole' => $subrole
+            ]
+        ]);
+    }
 }

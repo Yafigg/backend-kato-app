@@ -25,5 +25,10 @@ class DatabaseSeeder extends Seeder
                 'is_verified' => true,
             ]
         );
+
+        // Seed inventory data
+        $this->call([
+            InventorySeeder::class,
+        ]);
     }
 }
