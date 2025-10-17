@@ -13,21 +13,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        // Create test user only if it doesn't exist
-        User::firstOrCreate(
-            ['email' => 'test@example.com'],
-            [
-                'name' => 'Test User',
-                'password' => bcrypt('password'),
-                'user_type' => 'petani',
-                'is_verified' => true,
-            ]
-        );
-
-        // Seed inventory data
+        // Seed testing users and inventory data
         $this->call([
+            TestingUsersSeeder::class,
             InventorySeeder::class,
         ]);
     }

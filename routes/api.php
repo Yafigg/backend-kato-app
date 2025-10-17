@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\PemasaranController;
+use App\Http\Controllers\Api\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -156,6 +157,24 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('categories', [CustomerController::class, 'getCategories']);
         Route::get('orders', [CustomerController::class, 'getOrders']);
         Route::post('orders', [CustomerController::class, 'createOrder']);
+        Route::get('statistics', [CustomerController::class, 'getStatistics']);
+        Route::get('profile', [CustomerController::class, 'getProfile']);
+        Route::put('profile', [CustomerController::class, 'updateProfile']);
+    });
+
+    // Product routes (public - accessible by all authenticated users)
+    Route::prefix('products')->group(function () {
+        Route::get('/', [ProductController::class, 'index']);
+        Route::get('/featured', [ProductController::class, 'featured']);
+        Route::get('/categories', [ProductController::class, 'categories']);
+        Route::get('/{id}', [ProductController::class, 'show']);
+        
+        // Image management (Production/Marketing only)
+        Route::middleware('role:produksi,pemasaran')->group(function () {
+            Route::post('/{id}/upload-image', [ProductController::class, 'uploadImage']);
+            Route::put('/{id}/set-primary-image/{imageIndex}', [ProductController::class, 'setPrimaryImage']);
+            Route::delete('/{id}/delete-image/{imageIndex}', [ProductController::class, 'deleteImage']);
+        });
     });
 });
 
